@@ -1,18 +1,18 @@
-# [LXD Client Ansible Role][1]
+# [Incus Client Ansible Role][1]
 
 [![test & release][2]][3]
 
-This Ansible role installs LXD and configures one or more other hosts from the
+This Ansible role installs Incus and configures one or more other hosts from the
 Ansible inventory as remotes.
 
 ## Requirements
 
-This role requires the LXD remotes to be defined in the same inventory as the
+This role requires the Incus remotes to be defined in the same inventory as the
 clients that are being configured. That is because it uses the ansible
 connections with the servers as trusted channel to transfer the users client
 certificates to the remotes.
 
-This also means that, if the LXD servers are provisioned in the same playbook
+This also means that, if the Incus servers are provisioned in the same playbook
 as the clients, the installation of the servers is a prerequisite step for this
 role to run.
 
@@ -20,39 +20,40 @@ role to run.
 
 <table>
 <tr><th>Name</th><th>Required</th><th>Type / Choices</th><th>Description</th></tr>
-<tr><td><code>lxd_client_remotes</code></td>
+<tr><td><code>incus_client_remotes</code></td>
 <td>yes</td>
 <td>list(string)</td>
 <td>
 
-List of Ansible inventory hostnames of machines that should be configured as LXD
-remotes. The ansible user on these machines should be a member of the lxd group
-so that it can configure client certificates on the server.
+List of Ansible inventory hostnames of machines that should be configured as
+Incus remotes. The ansible user on these machines should be a member of the
+incus group so that it can configure client certificates on the server.
 
-**Example:** `"{{ groups.lxd_servers }}"`
+**Example:** `"{{ groups.incus_servers }}"`
 </td></tr>
 
 
-<tr><td><code>lxd_client_default_remote</code></td>
+<tr><td><code>incus_client_default_remote</code></td>
 <td>no</td>
 <td>string</td>
 <td>
 
-Name of an LXD remote that will be configured as default-remote in the lxc
-client config. Defaults to the first entry in the `lxd_client_remotes` variable.
+Name of an Incus remote that will be configured as default-remote in the incus
+client config. Defaults to the first entry in the `incus_client_remotes`
+variable.
 
-**Default:** `lxd_client_remotes[0]`
+**Default:** `incus_client_remotes[0]`
 </td></tr>
 
 
-<tr><td><code>lxd_client_users</code></td>
+<tr><td><code>incus_client_users</code></td>
 <td>no</td>
 <td>list(string)</td>
 <td>
 
 List of OS users, on the client machines which should be configured to access
-the LXD remotes. If no list is supplied, only the Ansible user will be set up to
-reach the remotes.
+the Incus remotes. If no list is supplied, only the Ansible user will be set up
+to reach the remotes.
 
 **Default:** `["{{ ansible_user_id }}"]`
 </td></tr>
@@ -65,25 +66,25 @@ None.
 ## Example Playbook
 
 ```yaml
-- hosts: lxd_servers
+- hosts: incus_servers
   tasks:
-    - name: Configure LXD servers
+    - name: Configure Incus servers
       ansible.builtin.import_role:
-        name: gliech.lxd
+        name: gliech.incus
       vars:
-        lxd_config:
+        incus_config:
           config: {}
           networks: []
           storage_pools:
             - config:
-                source: /var/lib/lxd/storage-pools/default
+                source: /var/lib/incus/storage-pools/default
               description: ""
               name: default
               driver: dir
           profiles:
             - config:
                 security.privileged: "true"
-              description: Default LXD profile
+              description: Default Incus profile
               devices:
                 root:
                   path: /
@@ -98,23 +99,23 @@ None.
                 features.profiles: "true"
                 features.storage.buckets: "true"
                 features.storage.volumes: "true"
-              description: Default LXD project
+              description: Default Incus project
               name: default
 
 - hosts: localhost
   tasks:
-    - name: Configure LXD client
+    - name: Configure Incus client
       ansible.builtin.import_role:
-        name: gliech.lxd_client
+        name: gliech.incus_client
       vars:
-        lxd_client_remotes: "{{ groups.lxd_servers }}"
+        incus_client_remotes: "{{ groups.incus_servers }}"
 ```
 
 ## License
 
 This project is licensed under the terms of the [GNU General Public License v3.0](LICENSE)
 
-[1]: https://galaxy.ansible.com/ui/standalone/roles/gliech/lxd_client/
-[2]: https://github.com/gliech/lxd-client-ansible-role/actions/workflows/release.yml/badge.svg
-[3]: https://github.com/gliech/lxd-client-ansible-role/actions/workflows/release.yml
+[1]: https://galaxy.ansible.com/ui/standalone/roles/gliech/incus_client/
+[2]: https://github.com/gliech/incus-client-ansible-role/actions/workflows/release.yml/badge.svg
+[3]: https://github.com/gliech/incus-client-ansible-role/actions/workflows/release.yml
 [4]: https://github.com/gliech/semantic-release-config-github-ansible-role

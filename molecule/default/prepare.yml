@@ -9,8 +9,8 @@
       become: yes
       when: ansible_pkg_mgr in ['apt', 'pacman']
 
-- name: Prepare LXD client
-  hosts: lxd_client
+- name: Prepare Incus client
+  hosts: incus_client
   tasks:
     - name: Install python cryptography
       ansible.builtin.package:
@@ -18,27 +18,27 @@
         state: present
       become: yes
 
-- name: Prepare LXD server
-  hosts: lxd_server
+- name: Prepare Incus server
+  hosts: incus_server
   tasks:
-    - name: "Import lxd"
+    - name: Setup Incus
       ansible.builtin.import_role:
-        name: "gliech.lxd"
+        name: gliech.incus
       vars:
-        lxd_config:
+        incus_config:
           config:
             core.https_address: "[::]:8512"
           networks: []
           storage_pools:
             - config:
-                source: /var/lib/lxd/storage-pools/default
+                source: /var/lib/incus/storage-pools/default
               description: ""
               name: default
               driver: dir
           profiles:
             - config:
                 security.privileged: "true"
-              description: Default LXD profile
+              description: Default Incus profile
               devices:
                 root:
                   path: /
@@ -51,5 +51,5 @@
                 features.networks: "true"
                 features.profiles: "true"
                 features.storage.volumes: "true"
-              description: Default LXD project
+              description: Default Incus project
               name: default

@@ -1,9 +1,9 @@
 ---
 - name: Converge
-  hosts: lxd_client
+  hosts: incus_client
   tasks:
-    - name: "Import lxd_client"
+    - name: "Import incus_client"
       ansible.builtin.import_role:
-        name: "gliech.lxd_client"
+        name: "gliech.incus_client"
       vars:
-        lxd_client_remotes: "{{ groups.lxd_server }}"
+        incus_client_remotes: "{{ groups.incus_server }}"

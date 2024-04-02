@@ -1,31 +1,31 @@
 ---
 - name: Copy client certificate to the server
   ansible.builtin.copy:
-    content: "{{ lxd_client_cert.certificate }}"
-    dest: ~/lxd_client_certificates/{{ ansible_hostname }}_{{ lxd_client_user }}.crt
+    content: "{{ incus_client_cert.certificate }}"
+    dest: ~/incus_client_certificates/{{ ansible_hostname }}_{{ incus_client_user }}.crt
     mode: 0600
-  delegate_to: "{{ lxd_client_remote }}"
-  register: lxd_client_copy_cert
+  delegate_to: "{{ incus_client_remote }}"
+  register: incus_client_copy_cert
 
-- name: Add new client certificate in lxd  # noqa no-handler
+- name: Add new client certificate in incus  # noqa no-handler
   ansible.builtin.command:
-    cmd: lxc config trust add {{ ansible_hostname }}_{{ lxd_client_user }}.crt
-    chdir: ~/lxd_client_certificates
-  delegate_to: "{{ lxd_client_remote }}"
+    cmd: incus config trust add-certificate {{ ansible_hostname }}_{{ incus_client_user }}.crt
+    chdir: ~/incus_client_certificates
+  delegate_to: "{{ incus_client_remote }}"
   changed_when: true
-  when: lxd_client_copy_cert.changed
+  when: incus_client_copy_cert.changed
 
 - name: Copy server certificate to the client
   ansible.builtin.copy:
     content: "{{
       (
         (
-          lxd_client_server_info.results |
-          selectattr('item', 'equalto', lxd_client_remote)
+          incus_client_server_info.results |
+          selectattr('item', 'equalto', incus_client_remote)
         ).0.stdout |
         from_yaml
       ).environment.certificate }}"
-    dest: "~/.config/lxc/servercerts/{{ lxd_client_remote }}.crt"
+    dest: "~/.config/incus/servercerts/{{ incus_client_remote }}.crt"
     mode: 0600
   become: yes
-  become_user: "{{ lxd_client_user }}"
+  become_user: "{{ incus_client_user }}"

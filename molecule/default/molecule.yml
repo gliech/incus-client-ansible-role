@@ -7,10 +7,10 @@ dependency:
 driver:
   name: podman
 platforms:
-  - name: mol-lxc-host
+  - name: mol-incus-host
     image: gliech/docker-archlinux-ansible:branch-master
     groups:
-      - lxd_server
+      - incus_server
     pre_build_image: true
     privileged: true
     exposed_ports:
@@ -22,10 +22,10 @@ platforms:
     override_command: false
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-  - name: mol-lxc-user
+  - name: mol-incus-user
     image: gliech/docker-archlinux-ansible:branch-master
     groups:
-      - lxd_client
+      - incus_client
     pre_build_image: true
     privileged: true
     override_command: false

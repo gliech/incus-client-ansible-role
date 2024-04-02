@@ -1,5 +1,5 @@
 ---
-default-remote: {{ lxd_client_default_remote | default(lxd_client_remotes[0]) }}
+default-remote: {{ incus_client_default_remote | default(incus_client_remotes[0]) }}
 remotes:
   images:
     addr: https://images.linuxcontainers.org
@@ -8,8 +8,8 @@ remotes:
   local:
     addr: unix://
     public: false
-{% for remote in lxd_client_remotes %}
-{% set server_addr = ((lxd_client_server_info.results | selectattr('item',
+{% for remote in incus_client_remotes %}
+{% set server_addr = ((incus_client_server_info.results | selectattr('item',
 'equalto', remote)).0.stdout | from_yaml).config['core.https_address'] %}
   {{ remote }}:
     addr: https://
@@ -19,7 +19,7 @@ remotes:
       {{ server_addr }}
     {% endif -%}
     auth_type: tls
-    protocol: lxd
+    protocol: incus
     public: false
 {% endfor %}
 aliases: {}

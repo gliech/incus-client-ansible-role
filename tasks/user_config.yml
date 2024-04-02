@@ -1,23 +1,23 @@
 ---
-- name: Ensure that the lxc config directory exists
+- name: Ensure that the incus config directory exists
   ansible.builtin.file:
-    path: ~/.config/lxc/servercerts
+    path: ~/.config/incus/servercerts
     mode: 0755
     state: directory
   become: yes
-  become_user: "{{ lxd_client_user }}"
+  become_user: "{{ incus_client_user }}"
 
 - name: Generate a client key
   community.crypto.openssl_privatekey:
-    path: ~/.config/lxc/client.key
+    path: ~/.config/incus/client.key
     type: ECC
     curve: secp384r1
   become: yes
-  become_user: "{{ lxd_client_user }}"
+  become_user: "{{ incus_client_user }}"
 
 - name: Generate certificate signing request
   community.crypto.openssl_csr_pipe:
-    privatekey_path: ~/.config/lxc/client.key
+    privatekey_path: ~/.config/incus/client.key
     digest: sha384
     organization_name: linuxcontainers.org
     key_usage:
@@ -30,35 +30,35 @@
       - CA:FALSE
     basic_constraints_critical: yes
     use_common_name_for_san: no
-    common_name: "{{ lxd_client_user }}@{{ ansible_hostname }}"
-  register: lxd_client_csr_pipe
+    common_name: "{{ incus_client_user }}@{{ ansible_hostname }}"
+  register: incus_client_csr_pipe
   become: yes
-  become_user: "{{ lxd_client_user }}"
+  become_user: "{{ incus_client_user }}"
   changed_when: no
 
 - name: Generate client certificate
   community.crypto.x509_certificate:
-    path: ~/.config/lxc/client.crt
-    privatekey_path: ~/.config/lxc/client.key
-    csr_content: "{{ lxd_client_csr_pipe.csr }}"
+    path: ~/.config/incus/client.crt
+    privatekey_path: ~/.config/incus/client.key
+    csr_content: "{{ incus_client_csr_pipe.csr }}"
     provider: selfsigned
     selfsigned_create_subject_key_identifier: never_create
     selfsigned_digest: sha384
     return_content: yes
-  register: lxd_client_cert
+  register: incus_client_cert
   become: yes
-  become_user: "{{ lxd_client_user }}"
+  become_user: "{{ incus_client_user }}"
 
-- name: Configure lxd remote connections
+- name: Configure incus remote connections
   ansible.builtin.include_tasks: server_config.yml
-  loop: "{{ lxd_client_remotes }}"
+  loop: "{{ incus_client_remotes }}"
   loop_control:
-    loop_var: lxd_client_remote
+    loop_var: incus_client_remote
 
 - name: Create client config file
   ansible.builtin.template:
-    src: lxc_config.yml.j2
-    dest: "~/.config/lxc/config.yml"
+    src: incus_config.yml.j2
+    dest: "~/.config/incus/config.yml"
     mode: 0600
   become: yes
-  become_user: "{{ lxd_client_user }}"
+  become_user: "{{ incus_client_user }}"

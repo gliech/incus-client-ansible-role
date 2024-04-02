@@ -1,27 +1,37 @@
 ---
-- name: Install lxd
-  ansible.builtin.include_tasks:
-    file: "install_{{ (ansible_pkg_mgr == 'pacman') | ternary('pacman', 'snap') }}.yml"
+- name: Remove iptables
+  community.general.pacman:
+    name: iptables
+    state: absent
+    force: yes
+  become: yes
+  when: ansible_os_family == 'Archlinux'
+
+- name: Install incus
+  ansible.builtin.package:
+    name: incus
+    state: present
+  become: yes
 
 - name: Create a dir for client certs on the remote
   ansible.builtin.file:
-    path: ~/lxd_client_certificates
+    path: ~/incus_client_certificates
     mode: 0755
     state: directory
   run_once: yes
   delegate_to: "{{ item }}"
-  loop: "{{ lxd_client_remotes }}"
+  loop: "{{ incus_client_remotes }}"
 
 - name: Get the server certificate
-  ansible.builtin.command: lxc info
-  register: lxd_client_server_info
+  ansible.builtin.command: incus info
+  register: incus_client_server_info
   changed_when: no
   run_once: yes
   delegate_to: "{{ item }}"
-  loop: "{{ lxd_client_remotes }}"
+  loop: "{{ incus_client_remotes }}"
 
-- name: Configure lxc users
+- name: Configure incus users
   ansible.builtin.include_tasks: user_config.yml
-  loop: "{{ lxd_client_users }}"
+  loop: "{{ incus_client_users }}"
   loop_control:
-    loop_var: lxd_client_user
+    loop_var: incus_client_user

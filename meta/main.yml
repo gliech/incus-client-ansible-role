@@ -1,16 +1,13 @@
 ---
 dependencies: []
 galaxy_info:
-  role_name: lxd_client
+  role_name: incus_client
   author: gliech
-  description: Install LXD and configure one or more other hosts from the
+  description: Install Incus and configure one or more other hosts from the
     Ansible inventory as remotes.
   license: GPL-3.0-only
   min_ansible_version: "2.9"
   platforms:
-    - name: Fedora
-      versions:
-        - "34"
     - name: ArchLinux
       versions:
         - all

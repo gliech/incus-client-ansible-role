@@ -1,6 +1,6 @@
 ---
 - name: Verify
-  hosts: lxd_client
+  hosts: incus_client
   gather_facts: false
   tasks:
     - name: Get facts from localhost
@@ -10,16 +10,16 @@
 
     - name: Replace server ip to work around docker networking
       ansible.builtin.replace:
-        path: ~/.config/lxc/config.yml
-        regexp: (?<=https://)mol-lxc-host
+        path: ~/.config/incus/config.yml
+        regexp: (?<=https://)mol-incus-host
         replace: "{{ local_vars.ansible_facts.ansible_default_ipv4.address }}"
 
     - name: Read container list
-      ansible.builtin.command: lxc info
+      ansible.builtin.command: incus info
       register: server_info
       changed_when: no
 
-    - name: Verify lxc interacts with the remote server
+    - name: Verify incus interacts with the remote server
       ansible.builtin.assert:
         that: (server_info.stdout | from_yaml).environment.kernel == 'Linux'
         quiet: true
