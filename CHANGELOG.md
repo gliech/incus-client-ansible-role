@@ -1,3 +1,15 @@
+## [1.0.1](https://github.com/gliech/incus-client-ansible-role/compare/v1.0.0...v1.0.1) (2024-04-13)
+
+
+### Reverts
+
+* **ci:** new jq requirement for incus server role ([6330a56](https://github.com/gliech/incus-client-ansible-role/commit/6330a569b94aec4634b23b5bd639b8c1014ae8b1))
+
+
+### Continuous Integration
+
+* **deps:** new jq requirement for incus server role ([b046ec4](https://github.com/gliech/incus-client-ansible-role/commit/b046ec4a396669cddc525eb74840653b171a38f6))
+
 # 1.0.0 (2024-04-02)
 
 
